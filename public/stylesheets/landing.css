@@ -1,0 +1,99 @@
+body {
+    background-color: #000;
+}
+
+#landing-header {
+    z-index: 1; 
+    /*websites are displayed in x-y-z space. larger z-index means the object is laying more forward to us => it will cover objects that has smaller z-index*/
+    position: relative;
+    /*in order for use to use z-index, we need to set the position not to static, which is the default position value*/
+    text-align: center;
+    /*center horizontally*/
+    padding-top: 40vh;
+    /*center vertically*/
+}
+
+#landing-header h1 {
+    color: #fff;
+}
+
+.slideshow {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    /*set to take up entire page*/
+    top: 0;
+    left: 0;
+    /*push the slideshow to the top-left corner*/
+    z-index: 0;
+    /*this makes sure the slideshow is always behind the landing-header objects*/
+    list-style: none;
+    /*this will remove the bullet points from <ul> elements*/
+    margin: 0;
+    padding: 0;
+}
+
+.slideshow li {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-size: cover;
+    top: 0;
+    left: 0;
+    /*the above 4 lines will allow the pictures to take up entire page*/
+    background-position: 50% 50%;
+    /*this will center the image perfectly in the center of the page*/
+    background-repeat: no-repeat;
+    z-index: 0;
+    opacity: 0;
+    /*start fading out.. to allow the following animation to fade into opacity=1*/
+    animation: imageAnimation 50s linear infinite;
+    /*
+    imageAnimation: name of animation we created
+    50s: time to last
+    linear: make sure the animation is in the same speed from beginning to the end
+    infinite: make the slideshow never ends
+    */
+}
+
+.slideshow li:nth-child(1) { 
+  background-image: url(https://static1.squarespace.com/static/54d851c5e4b04af614c50d14/t/54d8540be4b0810ff7561e2c/1461238175510/camping.jpg?format=1500w) 
+}
+.slideshow li:nth-child(2) { 
+  background-image: url(https://images.alphacoders.com/744/thumb-1920-744255.jpg);
+  animation-delay: 10s; 
+}
+.slideshow li:nth-child(3) { 
+  background-image: url(http://3.bp.blogspot.com/-EZslw2DfT5E/VFEMGzI_XYI/AAAAAAAAFuk/U-S7ouns-1A/s1600/Camping-In-Iceland-National-Park-Hd-Wallpaper-.jpg);
+  animation-delay: 20s; 
+}
+.slideshow li:nth-child(4) { 
+  background-image: url(https://images5.alphacoders.com/555/thumb-1920-555700.jpg);
+  animation-delay: 30s; 
+}
+.slideshow li:nth-child(5) { 
+  background-image: url(http://www.campinggosford.com/wp-content/uploads/2017/08/Po-pro-camping-on-the-bay-images.jpg);
+  animation-delay: 40s; 
+}
+
+@keyframes imageAnimation { 
+  0% { 
+    opacity: 0; 
+    animation-timing-function: ease-in;
+  }
+  10% {
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  20% {
+    opacity: 1
+  }
+  30% {
+    opacity: 0
+  }
+}
+
+/* Older browser support - .no-cssanimations class added by modernizr */
+.no-cssanimations .slideshow li {
+	opacity: 1;
+}
