@@ -15,7 +15,7 @@
                 <a href="mailto:<%= user.email %>"><%= user.email %></a>
             </div>
             
-            <% if(currentUser && (user.id === currentUser.id){ %>
+            <% if(currentUser && user.id === currentUser.id){ %>
                 <a class="btn btn-s btn-warning" href="/users/<%= user._id %>/edit">Edit Profile</a>
             <% } %>
             
