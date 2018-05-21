@@ -6,24 +6,35 @@
         
         <div class="col-md-4">
             <h1><%= user.firstName + " " + user.lastName %></h1>
+            
             <div class="thumbnail">
-                <img scr="<%= user.avatar %>" alt="user profile image">
+                <img src="<%= user.avatar %>" alt="user profile image">
             </div>
+            
             <div class="caption">
                 <a href="mailto:<%= user.email %>"><%= user.email %></a>
             </div>
+            
+            <% if(currentUser && (user.id === currentUser.id){ %>
+                <a class="btn btn-s btn-warning" href="/users/<%= user._id %>/edit">Edit Profile</a>
+            <% } %>
+            
         </div>
         
         <div class="col-md-8">
-            <h1>Bio</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia tenetur consequatur dicta pariatur accusamus minima deserunt aliquam commodi alias quae, iure labore officia saepe nisi, nesciunt, ad esse voluptatibus itaque.</p>
             
-            <h1><%= user.firstName %>'s Campground</h1>
+            <h1><%= user.firstName %>'s Campgrounds</h1>
+            
             <ul>
                 <% campgrounds.forEach(function(campground){ %>
                     <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
                 <% }); %>
             </ul>
+            
+            <% if(currentUser && user.id === currentUser.id){ %>
+                <a class="btn btn-s btn-primary" href="/campgrounds/new">Add New Campground</a>
+            <% } %>
+            
         </div>
         
     </div>

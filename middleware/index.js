@@ -1,5 +1,6 @@
 var Campground      = require("../models/campground"),
-    Comment         = require("../models/comment");
+    Comment         = require("../models/comment"),
+    User            = require("../models/user");
 
 // all the middlewares go here
 var middlewareObj = {};
@@ -25,7 +26,7 @@ middlewareObj.checkCampgroundOwnership = function(req, res, next){
     } else {
     // user not logged in
         req.flash("error", "You need to be logged in to do that."); 
-        res.redirect("back"); // take the user back to where they came from
+        res.redirect("/login"); // take the user back to where they came from
     }
 }
 
@@ -49,7 +50,7 @@ middlewareObj.checkCommentOwnership = function(req, res, next){
     } else {
     // user not logged in
         req.flash("error", "You need to be logged in to do that."); 
-        res.redirect("back"); // take the user back to where they came from
+        res.redirect("/login"); // take the user back to where they came from
     }
 }
 
@@ -61,6 +62,25 @@ middlewareObj.isLoggedIn = function(req, res, next){
     // adding req.flash before res.redirect will not show flash right away.. this line will allow us to pass in the flash message to /login in this case when we render /login
     // next step: go to app.js and pass in the message to all routes using res.locals
     res.redirect("/login");
+}
+
+middlewareObj.checkUser = function(req, res, next){
+    if(req.isAuthenticated()){
+        User.findById(req.params.id, function(err, foundUser){
+            if(err || !foundUser){
+                req.flash("error", "User not found!");
+                res.redirect("back");
+            } else if(foundUser.id === req.user.id){ 
+                next();
+            } else{
+                req.flash("error", "You don't have permission to do that.");
+                res.redirect("back");
+            }
+        });    
+    } else {
+        req.flash("error", "You need to be logged in to do that."); 
+        res.redirect("/login");
+    }
 }
 
 

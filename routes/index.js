@@ -2,6 +2,7 @@ var express         = require("express"),
     router          = express.Router(),
     User            = require("../models/user"),
     Campground      = require("../models/campground"),
+    middleware      = require("../middleware"),
     passport        = require("passport");
 
 // ROOT ROUTE
@@ -63,19 +64,35 @@ router.get("/logout", function(req, res){
 
 module.exports = router;
 
-// user profile
+// user profile SHOW route
 router.get("/users/:id", function(req, res){
    User.findById(req.params.id, function(err, foundUser){
        if(err){
            req.flash("error", "Cannot get user profile!");
-           res.redirect("back");
+           return res.redirect("back");
        }
        Campground.find().where("author.id").equals(foundUser._id).exec(function(err, foundUserCampgrounds){
             if(err){
                req.flash("error", "Something went wrong!");
-               res.redirect("back");
+               return res.redirect("back");
             }
             res.render("users/show", {user: foundUser, campgrounds: foundUserCampgrounds});
        });
+   });
+});
+
+// user profile EDIT route
+router.get("/users/:id/edit", middleware.checkUser, function(req, res){
+   res.render("users/edit");
+});
+
+// user profile UPDATE route
+router.put("/users/:id", middleware.checkUser, function(req, res){
+   User.findByIdAndUpdate(req.params.id, req.body.user, function(err, updatedUser){
+      if(err){
+          req.flash("error", "Something went wrong!");
+          return res.redirect("back");
+      } 
+      res.redirect("/users/" + req.params.id);
    });
 });
