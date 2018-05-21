@@ -1,6 +1,10 @@
 <% include ../partials/header %>
 <!-- ../ will bring us back to parent folder first-->
-
+    
+    <% if(currentUser && currentUser.isAdmin) { %>
+        <h1>admin</h1>
+    <% } %>
+    
     <header class="jumbotron">
         <div class="container">
             <!--add another container to create space inside the jumbotron-->

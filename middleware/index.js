@@ -12,7 +12,7 @@ middlewareObj.checkCampgroundOwnership = function(req, res, next){
                 req.flash("error", "Campground not found!");
                 res.redirect("back");
             // user own the campground
-            } else if(foundCampground.author.id.equals(req.user._id)){ // fronter is an ObjectID, latter is a string, so cannot do == or ===
+            } else if(foundCampground.author.id.equals(req.user._id) || req.user.isAdmin){ // fronter is an ObjectID, latter is a string, so cannot do == or ===
                 req.campground = foundCampground; // passing campground info out to the route
                 // the .equal method comes with mongoose
                 next();
@@ -37,7 +37,7 @@ middlewareObj.checkCommentOwnership = function(req, res, next){
                 req.flash("error", "Comment not found!");
                 res.redirect("back");
             // user own the comment
-            } else if(foundComment.author.id.equals(req.user._id)){ 
+            } else if(foundComment.author.id.equals(req.user._id) || req.user.isAdmin){ 
                 req.comment = foundComment;
                 next();
             } else{

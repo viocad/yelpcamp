@@ -27,9 +27,9 @@
                     <h4><a><%= campground.name %></a></h4>
                     <!-- if we dun put any class here, the default will alight the text to the left-->
                     <p><%= campground.description %></p>
-                    <p><em>Submitted By<%= campground.author.username %>, <%= moment(campground.createdAt).fromNow() %></em></p>
+                    <p><em>Submitted By <%= campground.author.username %>, <%= moment(campground.createdAt).fromNow() %></em></p>
                     
-                    <% if(currentUser && campground.author.id.equals(currentUser._id)){ %>
+                    <% if(currentUser && (campground.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
                         <a class="btn btn-xs btn-warning" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
                         <form class="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
                             <button class="btn btn-xs btn-danger">Delete</button>
@@ -54,7 +54,7 @@
                         <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
                         <p><%= comment.text %></p>
                         
-                        <% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+                        <% if(currentUser && (comment.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
                             <a class="btn btn-xs btn-warning" href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit</a>
                             <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
                                 <button class="btn btn-xs btn-danger">Delete</button>
