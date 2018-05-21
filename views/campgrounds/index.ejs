@@ -13,28 +13,40 @@
             <p>
                 <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground</a>
             </p>
+            <p>
+                <form action="/campgrounds" method="GET" class="form-inline">
+                    <!--after setting method to GET, express will return form input as req.query, instead of req.body-->
+                    <div class="form-group">
+                        <input type="text" name="search" placeholder="Campground search..." class="form-control">
+                        <input type="submit" value="Search" class="btn btn-default">
+                    </div>
+                </form>
+            </p>
         </div>
     </header>
     
-    <div class="row">
-        <div class="col-lg-12">
-            <h3>Our Most Popular CampGrounds!</h3>
-        </div>
-    </div>
-    <div class="row text-center" style="display: flex; flex-wrap: wrap;">
-        <% campgrounds.forEach(function(campground){ %>
-            <div class ="col-md-3 col-sm-6">
-                <div class="thumbnail">
-                    <img src="<%= campground.image %>">
-                    <div class="caption">
-                        <h4><%= campground.name %></h4>
-                    </div>
-                    <P>
-                        <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">More Info</a>
-                    </P>
-                </div>
+    <% if(campgrounds.length < 1){ %>
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>No campgrounds are found. Please try again!</h3>
             </div>
-        <% }); %>
+        </div>
+    <% } else{ %>
+        <div class="row text-center" style="display: flex; flex-wrap: wrap;">
+            <% campgrounds.forEach(function(campground){ %>
+                <div class ="col-md-3 col-sm-6">
+                    <div class="thumbnail">
+                        <img src="<%= campground.image %>">
+                        <div class="caption">
+                            <h4><%= campground.name %></h4>
+                        </div>
+                        <P>
+                            <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">More Info</a>
+                        </P>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
     </div>
 
 <% include ../partials/footer %>

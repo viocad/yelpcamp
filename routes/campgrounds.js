@@ -18,13 +18,24 @@ var geocoder = NodeGeocoder(options);
 router.get("/", function(req, res){ // instead of app.get, changed to route.get because we are using express.Router
 // as we add "/campgrounds" in the app.use in app.js file, we can simply all routes here
     // get all campgrounds from DB
-    Campground.find({}, function(err, allCampgrounds){
-       if(err){
-           console.log(err);
-       } else{
-           res.render("campgrounds/index", {campgrounds: allCampgrounds, page: "campgrounds"}); 
-       }
-    });
+    if(req.query.search){
+        const regex = new RegExp(escapeRegex(req.query.search), "gi");
+        Campground.find({name: regex}, function(err, allCampgrounds){
+           if(err){
+               console.log(err);
+           } else{
+               res.render("campgrounds/index", {campgrounds: allCampgrounds, page: "campgrounds"}); 
+           }
+        });
+    } else{
+        Campground.find({}, function(err, allCampgrounds){
+           if(err){
+               console.log(err);
+           } else{
+               res.render("campgrounds/index", {campgrounds: allCampgrounds, page: "campgrounds"}); 
+           }
+        });
+    }
 });
 
 // CREATE ROUTE: add new campground to DB
@@ -119,5 +130,9 @@ router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res){
         }
     });
 });
+
+function escapeRegex(text){ // this will replace all symbols to "\\$&"
+    return text.replace(/[-[\]{}()*+?.,\\^$!#\s]/g, "\\$&");
+}
 
 module.exports = router;
