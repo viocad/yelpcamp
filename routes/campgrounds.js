@@ -6,8 +6,8 @@ var express         = require("express"),
     
 var options = {
     provider: "here",
-    appId: process.env.APP_ID,
-    appCode: process.env.APP_CODE
+    appId: "XIgs3A6k9X07cYxR7aR6",
+    appCode: "jOF6Jn47bQ6iUrA9UVa_Gg"
     // the APP_ID and APP_CODE are stored in the .env file to stay behind the scene, the key used here has no restriction so that our app can access it from backend
     // the .env file then gets hidden using .gitignore file if we are using git
 }
