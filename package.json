@@ -2,6 +2,9 @@
   "name": "yelpcamp_v1",
   "version": "14.0.0",
   "description": "add mongoose",
+  "engines":{
+    "node": "8.11.2"
+  }
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
