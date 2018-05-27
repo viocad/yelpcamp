@@ -28,7 +28,7 @@ middlewareObj.checkCampgroundOwnership = function(req, res, next){
         req.flash("error", "You need to be logged in to do that."); 
         res.redirect("/login"); // take the user back to where they came from
     }
-}
+};
 
 middlewareObj.checkCommentOwnership = function(req, res, next){
     // user logged in
@@ -52,7 +52,7 @@ middlewareObj.checkCommentOwnership = function(req, res, next){
         req.flash("error", "You need to be logged in to do that."); 
         res.redirect("/login"); // take the user back to where they came from
     }
-}
+};
 
 middlewareObj.isLoggedIn = function(req, res, next){
     if(req.isAuthenticated()){
@@ -62,7 +62,7 @@ middlewareObj.isLoggedIn = function(req, res, next){
     // adding req.flash before res.redirect will not show flash right away.. this line will allow us to pass in the flash message to /login in this case when we render /login
     // next step: go to app.js and pass in the message to all routes using res.locals
     res.redirect("/login");
-}
+};
 
 middlewareObj.checkUser = function(req, res, next){
     if(req.isAuthenticated()){
@@ -81,7 +81,17 @@ middlewareObj.checkUser = function(req, res, next){
         req.flash("error", "You need to be logged in to do that."); 
         res.redirect("/login");
     }
-}
+};
+
+middlewareObj.checkcaptcha = function(req, res, next){
+    if(!req.recaptcha.error){
+        next();
+    } else{
+        req.flash("error", "Please prove you are human. =)");
+        res.redirect("back");
+    }    
+};
+
 
 
 module.exports = middlewareObj

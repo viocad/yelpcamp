@@ -4,9 +4,41 @@ var express         = require("express"),
     Campground      = require("../models/campground"),
     middleware      = require("../middleware"),
     async           = require("async"),
-    nodemailer      = require("nodemailer"),
-    crypto          = require("crypto"), // comes with node, dun need to install
-    passport        = require("passport");
+/*    nodemailer      = require("nodemailer"),
+    crypto          = require("crypto"),*/ // comes with node, dun need to install
+    passport        = require("passport"),
+    multer          = require("multer"),
+    cloudinary      = require("cloudinary"),
+    Recaptcha       = require("express-recaptcha").Recaptcha;
+    
+var recaptcha = new Recaptcha(process.env.RECAPTCHA_SITE_KEY, process.env.RECAPTCHA_SECRET_KEY);
+
+// multer configuration
+var storage = multer.diskStorage({
+        filename: function(req, file, callback){
+            callback(null, Date.now() + file.originalname);
+        }
+    });
+    
+var imageFilter = function(req, file, cb){
+    // filter the file uploaded by users... allow image formats only
+    if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)){
+        return cb (new Error("Only image files are allowed!"), false);
+    }
+    cb(null, true);
+};
+
+var upload = multer({
+    storage: storage,
+    fileFilter: imageFilter
+});
+
+// cloudinary configuration
+cloudinary.config({
+    cloud_name: "viocad",
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET
+});
 
 // ROOT ROUTE
 router.get("/", function(req, res){
@@ -14,44 +46,54 @@ router.get("/", function(req, res){
 });
 
 // show register form
-router.get("/register", function(req, res){
-    res.render("register", {page: "register"});
+router.get("/register", recaptcha.middleware.render, function(req, res){
+    res.render("register", {page: "register", captcha:res.recaptcha});
 });
 
 // handle sign up logic
-router.post("/register", function(req, res){
-    var newUser = new User({
-        username: req.body.username,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        avatar: req.body.avatar,
-        email: req.body.email
-    });
-    
-    if(req.body.adminCode === "123456"){
-        newUser.isAdmin = true;
-    }
-    
-    User.register(newUser, req.body.password, function(err, user){
-        if(err){
-            req.flash("error", err.message + ".");
-            return res.redirect("/register"); 
-        }
-        passport.authenticate("local")(req, res, function(){
-            req.flash("success", "Welcome to YelpCamp, " + user.username + "!");
-            res.redirect("/campgrounds");
+router.post("/register", recaptcha.middleware.verify, middleware.checkcaptcha, async function(req, res){
+    try{
+        var uploadedImage = await cloudinary.v2.uploader.upload(req.file.path);
+        req.body.avatar = uploadedImage.secure_url;
+        req.body.avatarId = uploadedImage.public_id;
+        
+        var newUser = new User({
+            username: req.body.username,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            avatar: req.body.avatar,
+            avatarId: req.body.avatarId,
+            email: req.body.email
         });
-    });
-    
+        
+        if(req.body.adminCode === "123456"){
+            return newUser.isAdmin = true;
+        }
+        
+        User.register(newUser, req.body.password, function(err, user){
+            if(err){
+                req.flash("error", err.message + ".");
+                return res.redirect("/register"); 
+            }
+            passport.authenticate("local")(req, res, function(){
+                req.flash("success", "Welcome to YelpCamp, " + user.username + "!");
+                res.redirect("/campgrounds");
+            });
+        }); 
+    } catch (err){
+        req.flash("error", err.message);
+        return res.redirect("back");       
+    }
+
 });
 
 // show login form
-router.get("/login", function(req, res){
-    res.render("login", {page: "login"}); 
+router.get("/login", recaptcha.middleware.render, function(req, res){
+    res.render("login", {page: "login", captcha:res.recaptcha}); 
 });
 
 // handle login logic
-router.post("/login", passport.authenticate("local", 
+router.post("/login", recaptcha.middleware.verify, middleware.checkcaptcha, passport.authenticate("local", 
     {
         successRedirect: "/campgrounds",
         failedRedirect:"/login"
@@ -91,14 +133,32 @@ router.get("/users/:id/edit", middleware.checkUser, function(req, res){
 
 // user profile UPDATE route
 router.put("/users/:id", middleware.checkUser, function(req, res){
-   User.findByIdAndUpdate(req.params.id, req.body.user, function(err, updatedUser){
-      if(err){
-          req.flash("error", "Something went wrong!");
-          return res.redirect("back");
-      } 
-      res.redirect("/users/" + req.params.id);
-   });
+    User.findById(req.params.id, async function(err, foundUser){
+        if(err){
+           req.flash("error", "Something went wrong!");
+           res.redirect("back");
+        } else{
+            if(req.file){
+                try{
+                    await cloudinary.v2.uploader.destroy(foundUser.avatarId);
+                    var updatedImage = await cloudinary.v2.uploader.upload(req.file.path);
+                    req.body.avatarId = updatedImage.public_id;
+                    req.body.avatar = updatedImage.secure_url;
+                } catch(err){
+                   req.flash("error", err.message);
+                   return res.redirect("back");                    
+                }
+            }
+            foundUser = req.body.user;
+            foundUser.save();
+            req.flash("success", "Successfully updated profile.");
+            res.redirect("/users/" + req.params.id);
+        }
+    });
 });
+
+
+
 
 /*// user forgot password GET route
 router.get("/forgot", function(req, res){

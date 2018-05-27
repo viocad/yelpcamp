@@ -20,6 +20,7 @@ var campgroundRoutes    = require("./routes/campgrounds"),
 
 mongoose.connect(process.env.DB_URL);
 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
@@ -37,7 +38,7 @@ app.use(require("express-session")({
     secret: "Pudding is the cutest!",
     resave: false,
     saveUninitialized: false
-}))
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));

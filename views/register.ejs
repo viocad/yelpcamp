@@ -3,42 +3,44 @@
     <div class="row">
         <h1 style="text-align: center;">Sign Up</h1>
         <div style="width: 30%; margin: 25px auto">
-            <form action="/register", method="POST">
+            <form action="/register" method="POST" enctype="multipart/form-data">
                 
                 <div class="form-group">
-                    <label for="location">Username</label>
-                    <input class="form-control" type="text" name="username" placeholder="username">
+                    <label for="username">Username</label>
+                    <input class="form-control" type="text" name="username" placeholder="username" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Password</label>
-                    <input class="form-control" type="password" name="password" placeholder="password">
+                    <label for="password">Password</label>
+                    <input class="form-control" type="password" name="password" placeholder="password" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">First Name</label>
+                    <label for="firstName">First Name</label>
                     <input class="form-control" type="text" name="firstName" placeholder="first name">
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Last Name</label>
+                    <label for="lastName">Last Name</label>
                     <input class="form-control" type="text" name="lastName" placeholder="last name">
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Email</label>
-                    <input class="form-control" type="email" name="email" placeholder="email">
+                    <label for="email">Email</label>
+                    <input class="form-control" type="email" name="email" placeholder="email" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Avatar (url Link)</label>
-                    <input class="form-control" type="text" name="avatar" placeholder="avatar url">
+                    <label for="avatar">Avatar</label>
+                    <input class="form-control" type="file" name="avatar" id="image" accept="avatar/*">
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Admin Code</label>
+                    <label for="adminCode">Admin Code</label>
                     <input class="form-control" type="text" name="adminCode" placeholder="admin code">
                 </div>
+                
+                <div class="g-recaptcha form-group" data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"></div>
                 
                 <div class="form-group">
                     <button class="btn btn-lg btn-primary btn-block">Sign Up!</button>
